@@ -24,3 +24,24 @@ Slot 249 base 56
 Slot 250 base 57
 Slot 251 base 58
 ````
+
+## Custom Home Assistant Telemetry & Docker Build
+
+This fork includes deterministic bidirectional telemetry for Home Assistant via Wiinnertag:
+- **Menu Hook (`source/network/networkops.cpp`):** Dispatches `Wiinnertag::TagGame("LOADER")` on network init (cold boot or return from game via HOME/Reset), resetting game state to "Sin juego" without polling/ping heuristics.
+- **Launch Hook (`GameBooter.cpp`):** Dispatches `Wiinnertag::TagGame(gameID)` on game launch.
+
+### Compiling `boot.dol` with Docker
+
+To build cleanly and reproducibly using the pinned official toolchain:
+
+```bash
+# Build release DOL
+docker run --rm -v "$(pwd)":/project -w /project devkitpro/devkitppc:20250527 make release -j4
+
+# Clean build artifacts if needed
+docker run --rm -v "$(pwd)":/project -w /project devkitpro/devkitppc:20250527 make clean
+```
+
+The resulting `boot.dol` is placed in the root of the repository. Copy it to `/apps/usbloader_gx/boot.dol` on the Wii's SD card (and as `uneoboot.dol` for Priiloader).
+
