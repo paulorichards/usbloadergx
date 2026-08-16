@@ -17,6 +17,8 @@
 #include "update.h"
 #include "gecko.h"
 #include "settings/ProxySettings.h"
+#include "settings/CSettings.h"
+#include "Wiinnertag.h"
 
 #define PORT 4299
 
@@ -321,6 +323,13 @@ static void *networkinitcallback(void *arg)
 			NET_LOCK();
 			networkHalt = true;
 			NET_UNLOCK();
+
+			static bool menu_notified = false;
+			if (!menu_notified && Settings.Wiinnertag)
+			{
+				menu_notified = true;
+				Wiinnertag::TagGame("LOADER");
+			}
 		}
 
 		NET_LOCK();
